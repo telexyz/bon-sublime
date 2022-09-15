@@ -5,7 +5,7 @@
 việc sử dụng các thư viện mở rộng, như vậy với từng platform, sẽ có plugin/client
 mang mục đích giao tiếp, còn việc xử lý dữ liệu thì giao cho server
 '''
-from .telexify.core import process_sequence
+from .bogo.core import process_sequence
 import sublime, sublime_plugin
 
 class State:

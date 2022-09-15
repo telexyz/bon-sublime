@@ -1,2 +1,6 @@
 __pycache__
 *.pyc
+*.datrie
+*.marisa
+zig-cache
+zig-out

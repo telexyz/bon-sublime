@@ -1,21 +1,12 @@
 ''' Bộ gõ song ngữ Anh Việt thông minh
 '''
-
-# https://note.nkmk.me/en/python-import-usage
 from .bogo.core import process_sequence
 import sublime, sublime_plugin
 print(sublime) # cd /Applications/Sublime\ Text.app/Contents/MacOS/Lib/python33
 
-import ctypes
-import os, re
-from os import path
-from pathlib import Path
-
-ROOT = Path(__file__).parent
-# c = ctypes.CDLL(str(ROOT / "datrie.so"))
-# from .datrie import BaseTrie
-# import datrie
-
+import os, re, pathlib, string
+ROOT = pathlib.Path(__file__).parent
+from .tuoc.datrie import BaseTrie # https://github.com/pytries/datrie
 
 class State:
     TELEXIFY = True
@@ -23,6 +14,7 @@ class State:
     FINAL = False
     SKIP_RESET = True
     EV_DICT = False
+    EN_TRIE = False
     def reset():
         State.ORIGIN = False
         State.SKIP_RESET = True
@@ -203,16 +195,25 @@ class GoogleTranslateCommand(sublime_plugin.TextCommand):
 
 ''' Tiện ích tra từ điển Anh - Việt khi di chuột lên 1 từ '''
 def plugin_loaded():
+    f = str(ROOT / "data/TudienAnhVietBeta.tab"); print(f.replace(" ","\\ "))
+    if not os.path.exists(f): return
     # Nạp từ điển Anh Việt
-    f = str(ROOT / "TudienAnhVietBeta.tab"); print(f.replace(" ","\\ "))
-    if not path.exists(f): return
-
     State.EV_DICT = {}
     t = open(f, mode="r", encoding="utf-8").read()
     for w in t.split("\n"):
         ev = w.split("\t")
         if len(ev) >= 2: State.EV_DICT[ev[0]] = ev[1]
     print("TEST EV_DICT: visually => " + State.EV_DICT["visually"])
+    # Nạp trie cho tiếng Anh
+    trie_file = str(ROOT / "data/words.datrie"); print(trie_file)
+    if os.path.exists(trie_file):
+        State.EN_TRIE = BaseTrie.load(trie_file)
+    else:
+        State.EN_TRIE = BaseTrie(string.ascii_lowercase)
+        t = open(str(ROOT / "data/words.txt"), mode="r", encoding="utf-8").read()
+        for w in t.split("\n"): State.EN_TRIE[w] = 1
+        State.EN_TRIE.save(trie_file)
+    print(State.EN_TRIE.keys(u'houser'))
 
 
 class DictionaryEventListener(sublime_plugin.EventListener):

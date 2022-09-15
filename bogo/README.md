@@ -1,3 +1,3 @@
-Mã nguồn được sửa đổi từ https://github.com/BoGoEngine/ibus-bogo/tree/master/bogo-python/bogo để làm prototype.
+Mã nguồn được sửa đổi từ [ibus-bogo](https://github.com/BoGoEngine/bogo-python/tree/master/bogo) để làm bản mẫu nhanh.
 
-Bản final có thể viết lại bằng zig hoặc pythonc để tối ưu hiệu năng.
+Bản cuối có thể viết lại bằng zig hoặc pythonc để tối ưu hiệu năng.

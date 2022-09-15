@@ -2,11 +2,13 @@
 '''
 from .bogo.core import process_sequence
 import sublime, sublime_plugin
-print(sublime) # cd /Applications/Sublime\ Text.app/Contents/MacOS/Lib/python33
+import os, sys, re, pathlib, string
 
-import os, re, pathlib, string
-ROOT = pathlib.Path(__file__).parent
-from .tuoc.datrie import BaseTrie # https://github.com/pytries/datrie
+ROOT = pathlib.Path(__file__).parent; print(str(ROOT).replace(" ", "\\ "))
+VER_INFO = sys.version_info; print(VER_INFO)
+
+if VER_INFO.major == 3 and VER_INFO.minor == 8 and sys.platform == "darwin":
+    from .tuoc.datrie import BaseTrie # https://github.com/pytries/datrie
 
 class State:
     TELEXIFY = True
@@ -152,7 +154,9 @@ class AzPressCommand(sublime_plugin.TextCommand):
             if State.FINAL != State.ORIGIN:
                 # đồng thời show ORIGIN trong popup để người gõ xem đó có phải
                 # từ tiếng Anh mình muốn gõ hay không
-                self.view.show_popup(State.ORIGIN, location=curr_region.begin())
+                if State.EN_TRIE is False or \
+                    State.EN_TRIE.has_keys_with_prefix(State.ORIGIN):
+                    self.view.show_popup(State.ORIGIN, location=curr_region.begin())
         else: # Nếu ko thì hiển thị ORIGIN
             self.view.end_edit(edit)
             self.view.run_command("replace_current", { "string" : State.ORIGIN })
@@ -195,7 +199,7 @@ class GoogleTranslateCommand(sublime_plugin.TextCommand):
 
 ''' Tiện ích tra từ điển Anh - Việt khi di chuột lên 1 từ '''
 def plugin_loaded():
-    f = str(ROOT / "data/TudienAnhVietBeta.tab"); print(f.replace(" ","\\ "))
+    f = str(ROOT / "data/TudienAnhVietBeta.tab")
     if not os.path.exists(f): return
     # Nạp từ điển Anh Việt
     State.EV_DICT = {}
@@ -205,15 +209,16 @@ def plugin_loaded():
         if len(ev) >= 2: State.EV_DICT[ev[0]] = ev[1]
     print("TEST EV_DICT: visually => " + State.EV_DICT["visually"])
     # Nạp trie cho tiếng Anh
-    trie_file = str(ROOT / "data/words.datrie"); print(trie_file)
-    if os.path.exists(trie_file):
-        State.EN_TRIE = BaseTrie.load(trie_file)
-    else:
-        State.EN_TRIE = BaseTrie(string.ascii_lowercase)
-        t = open(str(ROOT / "data/words.txt"), mode="r", encoding="utf-8").read()
-        for w in t.split("\n"): State.EN_TRIE[w] = 1
-        State.EN_TRIE.save(trie_file)
-    print(State.EN_TRIE.keys(u'houser'))
+    if BaseTrie:
+        trie_file = str(ROOT / "data/words.datrie")
+        if os.path.exists(trie_file):
+            State.EN_TRIE = BaseTrie.load(trie_file)
+        else:
+            State.EN_TRIE = BaseTrie(string.ascii_lowercase)
+            t = open(str(ROOT / "data/words.txt"), mode="r", encoding="utf-8").read()
+            for w in t.split("\n"): State.EN_TRIE[w] = 1
+            State.EN_TRIE.save(trie_file)
+        print(State.EN_TRIE.keys('houser'))
 
 
 class DictionaryEventListener(sublime_plugin.EventListener):

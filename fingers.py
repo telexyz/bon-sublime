@@ -2,15 +2,20 @@
 '''
 
 # https://note.nkmk.me/en/python-import-usage
-# from datrie import BaseTrie
-# import datrie
 from .bogo.core import process_sequence
 import sublime, sublime_plugin
 print(sublime) # cd /Applications/Sublime\ Text.app/Contents/MacOS/Lib/python33
 
+import ctypes
 import os, re
 from os import path
 from pathlib import Path
+
+ROOT = Path(__file__).parent
+# c = ctypes.CDLL(str(ROOT / "datrie.so"))
+# from .datrie import BaseTrie
+# import datrie
+
 
 class State:
     TELEXIFY = True
@@ -199,7 +204,6 @@ class GoogleTranslateCommand(sublime_plugin.TextCommand):
 ''' Tiện ích tra từ điển Anh - Việt khi di chuột lên 1 từ '''
 def plugin_loaded():
     # Nạp từ điển Anh Việt
-    ROOT = Path(__file__).parent
     f = str(ROOT / "TudienAnhVietBeta.tab"); print(f.replace(" ","\\ "))
     if not path.exists(f): return
 

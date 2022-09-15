@@ -1,12 +1,16 @@
 ''' Bộ gõ song ngữ Anh Việt thông minh
 '''
-# import marisa_trie # => không thể cài thêm 3rd-party libs
-'''=>Có lẽ cần dùng kiến trúc client server để làm đơn giản
-việc sử dụng các thư viện mở rộng, như vậy với từng platform, sẽ có plugin/client
-mang mục đích giao tiếp, còn việc xử lý dữ liệu thì giao cho server
-'''
+
+# https://note.nkmk.me/en/python-import-usage
+# from datrie import BaseTrie
+# import datrie
 from .bogo.core import process_sequence
 import sublime, sublime_plugin
+print(sublime) # cd /Applications/Sublime\ Text.app/Contents/MacOS/Lib/python33
+
+import os, re
+from os import path
+from pathlib import Path
 
 class State:
     TELEXIFY = True
@@ -193,16 +197,10 @@ class GoogleTranslateCommand(sublime_plugin.TextCommand):
 
 
 ''' Tiện ích tra từ điển Anh - Việt khi di chuột lên 1 từ '''
-import os, re
-import os.path
-from os import path
 def plugin_loaded():
     # Nạp từ điển Anh Việt
-    # cd /Applications/Sublime\ Text.app/Contents/MacOS
-    # ln -s ~/repos/fingers-sublime/TudienAnhVietBeta.tab
-    # cd /Users/t/Library/Application\ Support/Sublime\ Text/Packages/
-    # ln -s ~/repos/fingers-sublime/TudienAnhVietBeta.tab
-    f = os.getcwd() + "/TudienAnhVietBeta.tab"; print(f.replace(" ","\\ "))
+    ROOT = Path(__file__).parent
+    f = str(ROOT / "TudienAnhVietBeta.tab"); print(f.replace(" ","\\ "))
     if not path.exists(f): return
 
     State.EV_DICT = {}

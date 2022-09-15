@@ -2,7 +2,7 @@
 
 https://github.com/pytries
 ```
-pip3 install datrie
+pip3 install datrie --target=/Users/t/Library/Application\ Support/Sublime\ Text/Lib/python33
 pip3 install -U marisa-trie
 ```
 

@@ -15,9 +15,7 @@ https://user-images.githubusercontent.com/8133/189085556-2d5768fb-dda0-424d-9d41
 
 => Các tính năng dùng tới `machine learning` chắc chắn thuộc về phần xử lý hậu kỳ, khi người dùng đã gõ xong và hệ thống phát hiện ra sự không hợp lý và đưa ra các gợi ý. Các xử lý này chạy trong `threads` riêng để không làm lag quá trình gõ phím tốc độ cao của người dùng.
 
-- [ ] Tính năng rà soát lỗi chính tả bằng cách thống kê `n-gram` các văn bản có trong current folder. | [tham khảo JamSpell](https://github.com/bakwc/JamSpell)
-
-- [ ] Dùng phím `~` để chuyển giữa tiếng Anh và tiếng Việt trong những trường hợp nhập nhằng.
+- [ ] Tự bỏ dấu + thành cho các gõ ko dấu, vd: mot con vit = một con vịt
 
 - [x] Dùng `datrie` để xác định từ đang gõ có thể là tiếng Anh hay ko? Nếu có thể là từ tiếng Anh thì mới hiện ở pop-up
 - [x] Khi viết code chỉ gõ dc TV trong comment và string
@@ -26,3 +24,7 @@ https://user-images.githubusercontent.com/8133/189085556-2d5768fb-dda0-424d-9d41
 - [x] Chọn đoạn text tiếng Anh, nhấn `command+esc` để google translate. Tiện ích cho việc dịch văn bản
 
 - [ ] Lưu ORIGIN của các từ TV được chuyển hóa gần đây để tiện cho việc undo từ tiếng Việt trở lại thành tiếng Anh Việt (chuỗi ký tự gốc)
+
+- [ ] Rà soát lỗi chính tả bằng cách thống kê `n-gram` các văn bản có trong current folder. | [tham khảo JamSpell](https://github.com/bakwc/JamSpell)
+
+- [ ] Dùng phím `~` để chuyển giữa tiếng Anh và tiếng Việt trong những trường hợp nhập nhằng.

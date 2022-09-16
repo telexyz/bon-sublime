@@ -66,15 +66,14 @@ def is_valid_combination(sound_tuple, final_form=True):
         return True
 
     if final_form:
-        return \
-            has_valid_consonants(sound_tuple) and \
+        return has_valid_consonants(sound_tuple) and \
             has_valid_vowel(sound_tuple) and \
             has_valid_tone(sound_tuple)
     else:
-        return \
-            has_valid_consonants(sound_tuple) and \
-            has_valid_vowel_non_final(sound_tuple) and
-            has_valid_tone(sound_tuple)
+        return has_valid_consonants(sound_tuple) \
+            and has_valid_vowel_non_final(sound_tuple) \
+            and has_valid_tone(sound_tuple)
+
 
 def has_valid_consonants(sound_tuple):
 
@@ -107,34 +106,34 @@ def has_valid_vowel(sound_tuple):
     vowel_wo_tone = tone.remove_tone_string(sound_tuple.vowel)
 
     has_valid_vowel_form = \
-        vowel_wo_tone in VOWELS and not \
-            (sound_tuple.last_consonant != '' and
-                vowel_wo_tone in TERMINAL_VOWELS)
+        vowel_wo_tone in VOWELS and \
+            (sound_tuple.last_consonant == '' or
+                vowel_wo_tone not in TERMINAL_VOWELS)
 
+    # 'ch' can only go after a, ê, uê, i, uy, oa
     has_valid_ch_ending = \
-        # 'ch' can only go after a, ê, uê, i, uy, oa
-        not (sound_tuple.last_consonant == 'ch' and
-                    not vowel_wo_tone in ('a', 'ê', 'uê', 'i', 'uy', 'oa'))
+        sound_tuple.last_consonant != 'ch' or
+            vowel_wo_tone in ('a', 'ê', 'uê', 'i', 'uy', 'oa')
 
+    # 'c' can't go after 'i' or 'ơ'
     has_valid_c_ending = \
-        # 'c' can't go after 'i' or 'ơ'
-        not (sound_tuple.last_consonant == 'c' and
-                    vowel_wo_tone in ('i', 'ơ'))
+        sound_tuple.last_consonant != 'c' or
+            vowel_wo_tone not in ('i', 'ơ')
 
     return \
         has_valid_vowel_form and \
         has_valid_ch_ending and \
         has_valid_c_ending and \
         has_valid_ng_nh_ending(vowel_wo_tone, sound_tuple)
-        '''
-        Warning: The ng and nh rules are not really phonetic but spelling rules.
-        Including them may hinder typing freedom and may prevent typing
-        unique local names.
-        '''
+    '''
+    Warning: The ng and nh rules are not really phonetic but spelling rules.
+    Including them may hinder typing freedom and may prevent typing
+    unique local names.
+    '''
 
 def has_valid_ng_nh_ending(vowel_wo_tone, sound_tuple):
+    # 'ng' can't go after i, ơ
     has_valid_ng_ending = \
-        # 'ng' can't go after i, ơ
         not (sound_tuple.last_consonant == 'ng' and
                     vowel_wo_tone in ('i', 'ơ'))
     

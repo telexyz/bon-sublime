@@ -39,29 +39,14 @@ SoundTuple = \
     collections.namedtuple('SoundTuple', ['first_consonant', 'vowel', 'last_consonant'])
 
 def has_valid_tone(sound_tuple):
-    intonation = tone.get_tone_string(sound_tuple.vowel)
-    return (sound_tuple.last_consonant not in ('c', 'p', 't', 'ch') or
-        intonation in (Tone.ACUTE, Tone.DOT))
+    return sound_tuple.last_consonant not in ('c', 'p', 't', 'ch') or \
+        tone.get_tone_string(sound_tuple.vowel) in (Tone.ACUTE, Tone.DOT)
 
 def is_valid_combination(sound_tuple, final_form=True):
-    """
-    Check if a character combination complies to Vietnamese phonology.
-    The basic idea is that if one can pronunce a sound_tuple then it's valid.
-    Sound tuples containing consonants exclusively (almost always
-    abbreviations) are also valid.
-
-    Input:
-        sound_tuple - a SoundTuple
-        final_form  - whether the tuple represents a complete word
-    Output:
-        True if the tuple seems to be Vietnamese, False otherwise.
-    """
-
     # We only work with lower case
     sound_tuple = SoundTuple._make([s.lower() for s in sound_tuple])
 
     # Words with no vowel are always valid
-    # FIXME: This looks like it should be toggled by a config key.
     if not sound_tuple.vowel:
         return True
 
@@ -69,22 +54,18 @@ def is_valid_combination(sound_tuple, final_form=True):
         return has_valid_consonants(sound_tuple) and \
             has_valid_vowel(sound_tuple) and \
             has_valid_tone(sound_tuple)
-    else:
-        return has_valid_consonants(sound_tuple) \
-            and has_valid_vowel_non_final(sound_tuple) \
-            and has_valid_tone(sound_tuple)
+
+    return has_valid_consonants(sound_tuple) \
+        and has_valid_vowel_non_final(sound_tuple)
 
 
 def has_valid_consonants(sound_tuple):
-
     def has_invalid_first_consonant():
         return (sound_tuple.first_consonant != "" and
                 not sound_tuple.first_consonant in CONSONANTS)
-
     def has_invalid_last_consonant():
         return (sound_tuple.last_consonant != "" and
                 not sound_tuple.last_consonant in TERMINAL_CONSONANTS)
-
     return not (has_invalid_first_consonant() or
                 has_invalid_last_consonant())
 
@@ -92,8 +73,8 @@ def has_valid_consonants(sound_tuple):
 def has_valid_vowel_non_final(sound_tuple):
     # If the sound_tuple is not complete, we only care whether its vowel
     # position can be transformed into a legit vowel.
-
     stripped_vowel = mark.strip(sound_tuple.vowel)
+
     if sound_tuple.last_consonant != '':
         return stripped_vowel in STRIPPED_VOWELS - STRIPPED_TERMINAL_VOWELS
     else:
@@ -103,49 +84,49 @@ def has_valid_vowel_non_final(sound_tuple):
 def has_valid_vowel(sound_tuple):
     # Check our vowel.
     # First remove all tones
-    vowel_wo_tone = tone.remove_tone_string(sound_tuple.vowel)
+    vowel_no_tone = tone.remove_tone_string(sound_tuple.vowel)
 
     has_valid_vowel_form = \
-        vowel_wo_tone in VOWELS and \
+        vowel_no_tone in VOWELS and \
             (sound_tuple.last_consonant == '' or
-                vowel_wo_tone not in TERMINAL_VOWELS)
+                vowel_no_tone not in TERMINAL_VOWELS)
 
     # 'ch' can only go after a, ê, uê, i, uy, oa
     has_valid_ch_ending = \
-        sound_tuple.last_consonant != 'ch' or
-            vowel_wo_tone in ('a', 'ê', 'uê', 'i', 'uy', 'oa')
+        sound_tuple.last_consonant != 'ch' or \
+            vowel_no_tone in ('a', 'ê', 'uê', 'i', 'uy', 'oa')
 
     # 'c' can't go after 'i' or 'ơ'
     has_valid_c_ending = \
-        sound_tuple.last_consonant != 'c' or
-            vowel_wo_tone not in ('i', 'ơ')
+        sound_tuple.last_consonant != 'c' or \
+            vowel_no_tone not in ('i', 'ơ')
 
-    return \
-        has_valid_vowel_form and \
+    return has_valid_vowel_form and \
         has_valid_ch_ending and \
-        has_valid_c_ending and \
-        has_valid_ng_nh_ending(vowel_wo_tone, sound_tuple)
+        has_valid_c_ending # and \
+        # has_valid_ng_nh_ending(vowel_no_tone, sound_tuple)
     '''
     Warning: The ng and nh rules are not really phonetic but spelling rules.
     Including them may hinder typing freedom and may prevent typing
     unique local names.
     '''
 
-def has_valid_ng_nh_ending(vowel_wo_tone, sound_tuple):
+def has_valid_ng_nh_ending(vowel_no_tone, sound_tuple):
     # 'ng' can't go after i, ơ
     has_valid_ng_ending = \
         not (sound_tuple.last_consonant == 'ng' and
-                    vowel_wo_tone in ('i', 'ơ'))
+                    vowel_no_tone in ('i', 'ơ'))
     
     # 'nh' can only go after a, ê, uy, i, oa, quy
-    has_y_but_is_not_quynh = vowel_wo_tone == 'y' and \
+    has_y_but_is_not_quynh = vowel_no_tone == 'y' and \
         sound_tuple.first_consonant != 'qu'
 
-    has_invalid_vowel = not vowel_wo_tone in \
+    has_invalid_vowel = not vowel_no_tone in \
         ('a', 'ê', 'i', 'uy', 'oa', 'uê', 'y')
 
-    has_valid_nh_ending = not \
-            (sound_tuple.last_consonant == 'nh' and
+    has_valid_nh_ending = \
+            not (sound_tuple.last_consonant == 'nh' and
                 (has_invalid_vowel or has_y_but_is_not_quynh))
     
-    return has_valid_ng_ending and has_valid_nh_ending
+    return has_valid_ng_ending and \
+        has_valid_nh_ending

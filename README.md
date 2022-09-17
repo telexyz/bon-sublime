@@ -11,7 +11,9 @@ https://user-images.githubusercontent.com/8133/189085556-2d5768fb-dda0-424d-9d41
 
 ### Tính năng
 
-!! __Lưu ý__: người dùng có thể gõ rất nhanh nên, các tính năng tốn tài nguyên như gợi ý nâng cao nếu tích hợp thời gian thực vào lúc gõ có thể gây lag !! Các tính năng dùng tới `machine learning` thuộc về xử lý hậu kỳ, khi người dùng vừa gõ xong một từ. Các xử lý này chạy trong `threads` riêng để không làm chậm quá trình gõ phím (tốc độ cao) của người dùng.
+> !! __Lưu ý__: người dùng có thể gõ rất nhanh nên, các tính năng tốn tài nguyên như gợi ý nâng cao nếu tích hợp thời gian thực vào lúc gõ có thể gây lag !!
+
+Các tính năng dùng tới `machine learning` thuộc về xử lý hậu kỳ, khi người dùng vừa gõ xong một từ. Các xử lý này chạy trong `threads` riêng để không làm chậm quá trình gõ phím (tốc độ cao) của người dùng.
 
 - [ ] Tự bỏ dấu + thành cho các gõ ko dấu, vd: mot con vit = một con vịt
 

@@ -9,5 +9,5 @@ Sau đó vào `Package Control: Install Package` và tìm `tay-sublime` để c�
 ## Cài đặt locally để phát triển
 ```
 git clone https://github.com/telexyz/tay-sublime.git
-ln -s ~/repos/fingers-sublime ~/Library/Application\ Support/Sublime\ Text/Packages/tay
+ln -s ~/repos/tay-sublime ~/Library/Application\ Support/Sublime\ Text/Packages/tay
 ```

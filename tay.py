@@ -17,6 +17,7 @@ class State:
     SKIP_RESET = True
     EV_DICT = False
     EN_TRIE = False
+    SMART01 = { "ko":"không", "dc":"được", "nx":"những" }
     def reset():
         State.ORIGIN = False
         State.SKIP_RESET = True
@@ -54,6 +55,22 @@ def mimic_original_key_press(view, edit, key):
     else:
         replace_selected_region(view, edit, region, key)
 
+
+def get_smart01():
+    try:
+        return State.SMART01[State.ORIGIN]
+    except KeyError: 
+        return False
+
+class Smart01Command(sublime_plugin.TextCommand):
+    def run(self, edit, key):
+        smart01 = get_smart01()
+        # print(State.ORIGIN, smart01)
+        if can_telexify(self.view) and smart01:
+            self.view.run_command("replace_current", { "string" : smart01 })
+        mimic_original_key_press(self.view, edit, key)
+        State.reset()
+        self.view.hide_popup()
 
 ''' TextCommand để hiện chuỗi ký tự gốc được gõ chứ ko chuyển hóa thành TV '''
 class KeepOriginCommand(sublime_plugin.TextCommand):
@@ -151,11 +168,15 @@ class AzPressCommand(sublime_plugin.TextCommand):
         if State.FINAL:
             self.view.end_edit(edit) # thì hiển thị FINAL
             self.view.run_command("replace_current", { "string" : State.FINAL })
-            if State.FINAL != State.ORIGIN:
+            smart01 = get_smart01()
+            if State.FINAL != State.ORIGIN or smart01:
+                if smart01:
+                    self.view.show_popup(smart01, location=curr_region.begin())
+                    return
                 # đồng thời show ORIGIN trong popup để người gõ xem đó có phải
                 # từ tiếng Anh mình muốn gõ hay không
                 if State.EN_TRIE is False or \
-                    State.EN_TRIE.has_keys_with_prefix(State.ORIGIN):
+                    State.EN_TRIE.has_keys_with_prefix(State.ORIGIN.lower()):
                     self.view.show_popup(State.ORIGIN, location=curr_region.begin())
         else: # Nếu ko thì hiển thị ORIGIN
             self.view.end_edit(edit)
@@ -177,10 +198,10 @@ class ToggleTelexModeCommand(sublime_plugin.TextCommand):
     def run(self, edit):
         if State.TELEXIFY is True:
             State.TELEXIFY = False
-            self.view.set_status('Fingers'," Gõ tiếng Việt: Tắt")
+            self.view.set_status('Tay'," Gõ tiếng Việt: Tắt")
         else:
             State.TELEXIFY = True
-            self.view.set_status('Fingers'," Gõ tiếng Việt: Bật")
+            self.view.set_status('Tay'," Gõ tiếng Việt: Bật")
 
 
 ''' Tiện ích gửi đoạn text được chọn lên Google dịch '''
@@ -219,6 +240,24 @@ def plugin_loaded():
             for w in t.split("\n"): State.EN_TRIE[w] = 1
             State.EN_TRIE.save(trie_file)
         print(State.EN_TRIE.keys('houser'))
+    
+    ''' không phân biệt cách gõ telex, vni ... người dùng gõ không dấu thanh, bộ gõ hỗ thêm dấu thanh giúp gõ nhanh hơn, vui hơn. '''
+    # State.SMART01 = {
+    #     'khong' : 'không',
+    #     'phan' : 'phân',
+    #     'biet' : 'biệt',
+    #     'cach' : 'cách',
+    #     'go' : 'gõ',
+    #     'nguoi' : 'người',
+    #     'dung' : 'dùng',
+    #     'dau' : 'dấu',
+    #     'bo' : 'bộ',
+    #     'ho' : 'hỗ',
+    #     'tro' : 'trợ',
+    #     'giup' : 'giúp',
+    #     'hon' : 'hơn',
+    #     'them' : 'thêm'
+    # }
 
 
 class DictionaryEventListener(sublime_plugin.EventListener):

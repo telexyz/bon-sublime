@@ -4,6 +4,10 @@
     { "keys": ["super+shift"], "command": "toggle_telex_mode" },
     { "keys": ["shift+super"], "command": "toggle_telex_mode" },
     
+    { "keys": [" "], "command": "smart01", "args": {"key": " " } },
+    { "keys": [","], "command": "smart01", "args": {"key": "," } },
+    { "keys": ["."], "command": "smart01", "args": {"key": "." } },
+
     // Giữ nguyên chuỗi ký tự đã gõ, ko chuyển hóa thành tiếng Việt
     { "keys": ["tab"], "command": "keep_origin", "args": {"key": "\t" } },
     { "keys": ["'"], "command": "keep_origin", "args": {"key": "'" } },
